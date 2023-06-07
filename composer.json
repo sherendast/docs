@@ -1,4 +1,6 @@
 {
+  get
+
     "name": "wp-api/docs",
     "description": "The WordPress REST API Handbook",
     "require": {
