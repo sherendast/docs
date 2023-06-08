@@ -4,7 +4,7 @@
 
 Cookie authentication is the standard authentication method included with WordPress. When you log in to your dashboard, this sets up the cookies correctly for you, so plugin and theme developers need only to have a logged-in user.
 
-However, the REST API includes a technique called [nonces](http://codex.wordpress.org/WordPress_Nonces) to avoid [CSRF](http://en.wikipedia.org/wiki/Cross-site_request_forgery) issues. This prevents other sites from forcing you to perform actions without explicitly intending to do so. This requires slightly special handling for the API.
+However, the REST API includes a technique called [nonces](https://developer.wordpress.org/apis/security/nonces/) to avoid [CSRF](http://en.wikipedia.org/wiki/Cross-site_request_forgery) issues. This prevents other sites from forcing you to perform actions without explicitly intending to do so. This requires slightly special handling for the API.
 
 For developers using the built-in Javascript API, this is handled automatically for you. This is the recommended way to use the API for plugins and themes. Custom data models can extend `wp.api.models.Base` to ensure this is sent correctly for any custom requests.
 
@@ -55,14 +55,26 @@ $.ajax( {
 
 Note that you do not need to verify that the nonce is valid inside your custom end point. This is automatically done for you in `rest_cookie_check_errors()`.
 
+## Basic Authentication with Application Passwords
+
+As of 5.6, WordPress has shipped with [Application Passwords](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/), which can be generated from an Edit User page (wp-admin -> Users -> Edit User). 
+
+The credentials can be passed along to REST API requests served over https:// using [Basic Auth](https://ec.haxx.se/http/http-auth) / [RFC 7617](https://tools.ietf.org/html/rfc7617) — [here’s the documentation for how to use it with cURL](https://ec.haxx.se/http/http-auth).
+
+For a simple command-line script example, just swap out USERNAME, PASSWORD, and HOSTNAME in this with their respective values:
+
+```
+curl --user "USERNAME:PASSWORD" https://HOSTNAME/wp-json/wp/v2/users?context=edit
+```
+
 ## Authentication Plugins
 
-While cookie authentication is the only authentication mechanism available natively within WordPress, plugins may be added to support alternative modes of authentication that will work from remote applications. Some example plugins are [OAuth 1.0a Server](https://wordpress.org/plugins/rest-api-oauth1/), [Application Passwords](https://wordpress.org/plugins/application-passwords/), and [JSON Web Tokens](https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/).
+Plugins may be added to support alternative modes of authentication that will work from remote applications. Some example plugins are [OAuth 1.0a Server](https://wordpress.org/plugins/rest-api-oauth1/) and [JSON Web Tokens](https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/).
 
 [info]
 
 There's also a [Basic Authentication](https://github.com/WP-API/Basic-Auth) plugin.
 
-Note that this plugin requires sending your username and password with every request, and should only be used for development and testing i.e. not in a production environment.
+Note that this plugin requires sending your username and password with every request, and should only be used for development and testing i.e. not in a production environment. Using Application Passwords (see above) is preferred.
 
 [/info]
